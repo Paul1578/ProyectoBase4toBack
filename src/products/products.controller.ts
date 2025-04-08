@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Res } from '@nestjs/common';
 import { response } from 'express';
 
 @Controller('products')
@@ -56,14 +56,14 @@ export class ProductsController {
 
     //Decorador RES
 
-    @Get(':id')
-    find(@Res() response, @Param('id') id:number){
-      if(id<100){
-        return response.status(HttpStatus.OK).send(`Pagina del producto: ${id}`);
-      }else{
-        return response.status(HttpStatus.NOT_FOUND).send(`Producto con id ${id} not found`);
-      }
-    }
+    // @Get(':id')
+    // find(@Res() response, @Param('id') id:number){
+    //   if(id<100){
+    //     return response.status(HttpStatus.OK).send(`Pagina del producto: ${id}`);
+    //   }else{
+    //     return response.status(HttpStatus.NOT_FOUND).send(`Producto con id ${id} not found`);
+    //   }
+    // }
     //decorador PUT
     @Put(':id')
     update(@Param('id') id:number, @Body() body){
@@ -82,4 +82,8 @@ export class ProductsController {
       return `Hemos borrado el producto ${id}`;
     }
 
+    @Get('query')
+    rutaQuery(@Query() query) {
+    return `El dato `;
+}
 }
