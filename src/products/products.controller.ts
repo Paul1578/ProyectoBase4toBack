@@ -84,6 +84,6 @@ export class ProductsController {
 
     @Get('query')
     rutaQuery(@Query() query) {
-    return `El dato `;
+    return `El dato query, x ha resivido el valor ${query.x} `;
 }
 }
