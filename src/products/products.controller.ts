@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Res } from '@nestjs/common';
+import { response } from 'express';
 
 @Controller('products')
 export class ProductsController {
@@ -8,12 +9,12 @@ export class ProductsController {
     }
   @Get('hot')
         getSpecialProducts(): string {
-     return "Los productos calientes 😈";
+     return "Los productos mas calientes 😈";
     }
-    @Get(':id')
-        find(@Param() params) {
-     return `El producto que estas consulatando es el${params.id}`;
-    }
+    // @Get(':id')
+    //     find(@Param() params) {
+    //  return `El producto que estas consulatando es el${params.id}`;
+    // }
     // @Get(':id/:size')
     //     findWithSize( @Param() params) {
     //  return `En esta ruta obtenemos el producto ${params.id}, pero en su tamaño ${params.size}`;
@@ -39,11 +40,46 @@ export class ProductsController {
     //  return body;
     // }
     @Post()
+    @HttpCode(204)
     createProduct(
       @Body('name') name: string, 
       @Body('description') description: string
     ) {
       return `Creo el producto ${name} con descripción ${description}.`;
     }
-     
+
+    @Get('ruta-error-404')
+    @HttpCode(HttpStatus.NOT_FOUND)
+    rutaConError404(){
+      return 'esto es un error 404!! no existe';
+    }
+
+    //Decorador RES
+
+    @Get(':id')
+    find(@Res() response, @Param('id') id:number){
+      if(id<100){
+        return response.status(HttpStatus.OK).send(`Pagina del producto: ${id}`);
+      }else{
+        return response.status(HttpStatus.NOT_FOUND).send(`Producto con id ${id} not found`);
+      }
+    }
+    //decorador PUT
+    @Put(':id')
+    update(@Param('id') id:number, @Body() body){
+      return `Estas haciendo una operacion del recurso ${id} con ${body.name} y ${body.description}`;
+    }
+    //decorador Patch
+
+    @Patch(':id')
+    partialUpdate(@Param('id') id: number, @Body() body) {
+    return `Actualización parcial del ítem ${id}`;
+    }
+    
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    delete(@Param('id') id: number) {
+      return `Hemos borrado el producto ${id}`;
+    }
+
 }
