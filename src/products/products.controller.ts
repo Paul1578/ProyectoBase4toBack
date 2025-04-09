@@ -1,8 +1,27 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query, Res } from '@nestjs/common';
+import { ProductsService } from './products.service';
 import { response } from 'express';
+import { Product } from './interfaces/product/product.interface';
 
 @Controller('products')
 export class ProductsController {
+  constructor(private readonly productService:ProductsService){}
+  @Get()
+  getAllProducts():Product[]{
+    return this.productService.getAll();
+  }
+  @Post()
+  @HttpCode(204)
+  createProduct(
+    @Body('name') name: string,
+    @Body('description')description :string
+  ){
+    this.productService.insert({
+      id: this.productService.getAll().length,
+      name,
+      description
+    });
+  }
     @Get()
   getHelloInProducts(): string {
      return "Muchacho tamo en produccion";
@@ -39,14 +58,14 @@ export class ProductsController {
     //  createProduct(@Body() body) {
     //  return body;
     // }
-    @Post()
-    @HttpCode(204)
-    createProduct(
-      @Body('name') name: string, 
-      @Body('description') description: string
-    ) {
-      return `Creo el producto ${name} con descripción ${description}.`;
-    }
+    // @Post()
+    // @HttpCode(204)
+    // createProduct(
+    //   @Body('name') name: string, 
+    //   @Body('description') description: string
+    // ) {
+    //   return `Creo el producto ${name} con descripción ${description}.`;
+    // }
 
     @Get('ruta-error-404')
     @HttpCode(HttpStatus.NOT_FOUND)
