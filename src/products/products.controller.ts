@@ -13,7 +13,7 @@ export class ProductsController {
 
   @Get(':id')
   find(@Param('id') id: number) {
-    return this.productService.getId(id);
+    return this.productService.getId(+id);
   }
 
   @Post()
@@ -29,15 +29,14 @@ export class ProductsController {
     @Param('id') id: number, 
     @Body() body,
   ) {
-    return this.productService.update(id, body), { message: 'Producto Actualizado con exito'};
+    return this.productService.update(+id, body);
      
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   delete(@Param('id') id: number) {
-    this.productService.delete(id), { message: 'Producto Borrado con exito'};
-    
+    this.productService.delete(+id);
   }
 
 }

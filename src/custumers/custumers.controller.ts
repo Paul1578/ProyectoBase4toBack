@@ -12,9 +12,9 @@ export class CustumersController {
         return this.customersService.getCustomers();
     }
 
-    @Get()
-    find(@Param(':id') id: number) {
-        return this.customersService.getCustomersById(id);
+    @Get(':id')
+    find(@Param('id') id: number) {
+        return this.customersService.getCustomersById(+id);
     }
 
     @Post()
@@ -32,19 +32,15 @@ export class CustumersController {
         @Param('id') id: number,
         @Body() body,
     ){
-        return this.customersService.update(id, body), { message: 'Cliente Actualizado con exito'};
+        return this.customersService.update(+id, body);
     }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     delete(@Param('id') id: number){
-        this.customersService.delete(id)
+        this.customersService.delete(+id)
         return { message: 'Cliente Eliminado con exito'}
     }
-
-
-
-
 
     @Get('query')
         rutaQuery(@Query() query) {
