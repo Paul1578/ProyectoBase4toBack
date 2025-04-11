@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, Res } from '@nestjs/common';
 import { CustumersService } from './custumers.service';
 import { Customers } from './interface/customers.interface';
 
@@ -6,15 +6,39 @@ import { Customers } from './interface/customers.interface';
 export class CustumersController {
     
     constructor(private readonly customersService: CustumersService){}
+
+    @Get('ruta-error')
+    @HttpCode(HttpStatus.NOT_FOUND)
+    rutaConError(){
+        return 'Esto es un error 404!! ';
+    }
     
+    @Get(':id')
+        findR(@Res() response, @Param('id') id:number){
+     if(id<100){
+        return response.status(HttpStatus.OK).send(`Pagina del producto: ${id}`);
+        }else{
+     return response.status(HttpStatus.NOT_FOUND).send(`Producto con id ${id} not found`);
+        }
+    }
+    
+    //@Get()
+    //getAllCustomers(): Customers[]{
+    //    return this.customersService.getCustomers();
+    //}
     @Get()
-    getAllCustomers(): Customers[]{
-        return this.customersService.getCustomers();
+    getAll(){
+        return 'estas en custumers'
     }
 
-    @Get(':id')
+   //@Get(':id')
+   //find(@Param('id') id: number) {
+   //    return this.customersService.getCustomersById(+id);
+   //}
+
+   @Get(':id')
     find(@Param('id') id: number) {
-        return this.customersService.getCustomersById(+id);
+        return `Producto con id : ${id}`;
     }
 
     @Post()
@@ -42,10 +66,7 @@ export class CustumersController {
         return { message: 'Cliente Eliminado con exito'}
     }
 
-    @Get('query')
-        rutaQuery(@Query() query) {
-        return `El dato query, x ha resivido el valor ${query.x} y el valor de y es ${query.y} `;
-    }
+   
 
 
 }
