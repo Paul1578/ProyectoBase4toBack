@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Product } from './interfaces/product/product.interface';
 
 @Injectable()
@@ -26,14 +26,33 @@ export class ProductsService {
             description:"muy largo"
         }
     ];
-    getAll(){
+    getAll(): Product[] {
+      try {
         return this.products;
-    }
-    getId(id: number): Product {
-        return this.products.find( (item: Product) => item.id == id);
+      } catch (error) {
+        throw new InternalServerErrorException('Error al obtener los productos');
       }
-    
-      insert(body: any) {
+    }
+  
+    getId(id: number): Product {
+      try {
+        const product = this.products.find((item: Product) => item.id === id);
+        if (!product) {
+          throw new NotFoundException(`Producto con id ${id} no encontrado`);
+        }
+        return product;
+      } catch (error) {
+        if (error instanceof NotFoundException) throw error;
+        throw new InternalServerErrorException(`Error al encontrar el producto con id ${id}`);
+      }
+    }
+  
+    insert(body: any): void {
+      try {
+        if (!body.name || !body.description) {
+          throw new BadRequestException('Faltan campos obligatorios: name o description');
+        }
+  
         this.products = [
           ...this.products,
           {
@@ -42,25 +61,52 @@ export class ProductsService {
             description: body.description,
           }
         ];
-
+      } catch (error) {
+        if (error instanceof BadRequestException) throw error;
+        throw new InternalServerErrorException('Error al insertar el producto');
       }
-      
-      update(id: number, body: any) {
-        let product: Product = {
+    }
+  
+    update(id: number, body: any): void {
+      try {
+        const index = this.products.findIndex((item: Product) => item.id === id);
+        if (index === -1) {
+          throw new NotFoundException(`Producto con id ${id} no encontrado`);
+        }
+  
+        if (!body.name || !body.description) {
+          throw new BadRequestException('Faltan campos obligatorios: name o description');
+        }
+  
+        const updatedProduct: Product = {
           id,
           name: body.name,
           description: body.description,
+        };
+  
+        this.products[index] = updatedProduct;
+      } catch (error) {
+        if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
+        throw new InternalServerErrorException(`Error al actualizar el producto con id ${id}`);
+      }
+    }
+  
+    delete(id: number): void {
+      try {
+        const exists = this.products.some((item: Product) => item.id === id);
+        if (!exists) {
+          throw new NotFoundException(`Producto con id ${id} no encontrado`);
         }
-        this.products = this.products.map( (item: Product) => {
-          console.log(item, id, item.id == id);
-          return item.id == id ? product : item;
-        });
+  
+        this.products = this.products.filter((item: Product) => item.id !== id);
+      } catch (error) {
+        if (error instanceof NotFoundException) throw error;
+        throw new InternalServerErrorException(`Error al eliminar el producto con id ${id}`);
       }
-    
-      delete(id: number) {
-        this.products = this.products.filter( (item: Product) => item.id != id );
-      }
-      private lastId(): number {
-        return this.products[this.products.length - 1].id;
-      }
+    }
+  
+    private lastId(): number {
+      if (this.products.length === 0) return 0;
+      return this.products[this.products.length - 1].id;
+    }
 }
