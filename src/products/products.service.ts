@@ -6,23 +6,23 @@ export class ProductsService {
     private products : Product[] = [
         {
             id:0,
-            name: "marco de fotos pequeño",
+            name: "Marco de fotos pequeño",
             description: "Marco ideal para fotos 15x15"
         },{
             id:1,
-            name: "marco de fotos mediano",
+            name: "Marco de fotos mediano",
             description: "Marco ideal para fotos 25X25"
         },{ 
             id:2,
-            name: "marco de fotos grande",
+            name: "Marco de fotos grande",
             description: "Marco ideal para fotos 35x25"
         },{
             id:3,
-            name: "marco de fotos granades",
+            name: "Marco de fotos granades",
             description: "Marco ideal para fotos 45x35"
         },{
             id:4,
-            name:"marco semi grande",
+            name:"Marco semi grande",
             description:"muy largo"
         }
     ];
@@ -87,7 +87,7 @@ export class ProductsService {
         this.products[index] = updatedProduct;
       } catch (error) {
         if (error instanceof NotFoundException || error instanceof BadRequestException) throw error;
-        throw new InternalServerErrorException(`Error al actualizar el producto con id ${id}`);
+        throw new InternalServerErrorException(`Error al actualizar el producto con id: ${id}`);
       }
     }
   
@@ -95,13 +95,13 @@ export class ProductsService {
       try {
         const exists = this.products.some((item: Product) => item.id === id);
         if (!exists) {
-          throw new NotFoundException(`Producto con id ${id} no encontrado`);
+          throw new NotFoundException(`Producto con id: ${id}, no encontrado`);
         }
   
         this.products = this.products.filter((item: Product) => item.id !== id);
       } catch (error) {
         if (error instanceof NotFoundException) throw error;
-        throw new InternalServerErrorException(`Error al eliminar el producto con id ${id}`);
+        throw new InternalServerErrorException(`Error al eliminar el producto con id: ${id}`);
       }
     }
   

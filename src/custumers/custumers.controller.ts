@@ -24,7 +24,7 @@ export class CustumersController {
 
     ){
         this.customersService.insert(body);
-        return { message: 'Cliente Agregado'}
+        return { message: 'Cliente Agregado con exito'}
     }
 
     @Put(':id')
@@ -32,13 +32,14 @@ export class CustumersController {
         @Param('id') id: number,
         @Body() body,
     ){
-        return this.customersService.update(id, body)
+        return this.customersService.update(id, body), { message: 'Cliente Actualizado con exito'};
     }
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     delete(@Param('id') id: number){
         this.customersService.delete(id)
+        return { message: 'Cliente Eliminado con exito'}
     }
 
 
