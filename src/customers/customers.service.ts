@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {Customer} from './interface/customers/customer.interface'
 import { CustomersPatchDto } from './dto/customers-patch.dto';
 import { CustomersDto } from './dto/customers.dto';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class CustomersService {
@@ -71,17 +72,19 @@ export class CustomersService {
 
     //Patch con dto
     patch(id: number, body: CustomersPatchDto) {
-        const previousTagDto = this.getCustomersById(id);
-        if (!previousTagDto) return;
+        const previousCostomer = this.getCustomersById(id);
+        if (!previousCostomer) throw new Error('Customer no existe');
       
-        const updatedTag: CustomersDto = {
-          ...previousTagDto,
+        const customer: CustomersDto = {
+          ...previousCostomer,
           ...body,
+          id: previousCostomer.id
         };
       
-        this.customers = this.customers.map((item: CustomersDto) => {
-          return item.id === id ? updatedTag : item;
+        this.customers = this.customers.map((item) => {
+          return item.id === id ? customer : item;
         });
+        return customer
       }
 
     //DELETE DENTRO DEL CRUD
