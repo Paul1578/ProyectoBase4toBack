@@ -2,6 +2,8 @@ import { Type } from "class-transformer";
 import { IsDate, IsInt, IsString, Matches } from "class-validator";
 
 export class CustomersDto {
+
+    id:number
         
     @IsString()
     @Matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, {message : 'El nombre solo debe contener letras y espacios'})
