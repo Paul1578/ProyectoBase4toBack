@@ -31,10 +31,10 @@ export class TagsService {
     return texto
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // quita acentos
-      .replace(/[^a-z0-9\s-]/g, '')    // quita caracteres especiales
+      .replace(/[\u0300-\u036f]/g, '') 
+      .replace(/[^a-z0-9\s-]/g, '')    
       .trim()
-      .replace(/\s+/g, '-');           // espacios por guiones
+      .replace(/\s+/g, '-');           
   }
 
   async insert(tagDto: TagDto): Promise<Tag> {
