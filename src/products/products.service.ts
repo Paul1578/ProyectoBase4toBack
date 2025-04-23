@@ -1,77 +1,56 @@
-import { Injectable } from '@nestjs/common';
-import { Product } from './interface/product/product.interface';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Product } from './entity/products.entity';
+import { CreateProductsDto } from './dto/products.dto/products.dto';
+import { UpdateProductsDto } from './dto/updateProduct.dto';
+
 
 @Injectable()
 export class ProductsService {
-    private products: Product[] = [
-        {
-            id: 0,
-            name: 'Vela aromática',
-            description: 'Esta vela olor a rosas',
-          },
-          {
-            id: 1,
-            name: 'Marco de fotos pequeño',
-            description: 'Marco ideal para fotos 10x15',
-          },
-          {
-            id: 2,
-            name: 'Marco de fotos mediano',
-            description: 'Marco ideal para fotos 20x25',
-          },
-          {
-            id: 3,
-            name: 'Marco de fotos grande',
-            description: 'Marco ideal para fotos 40x30',
-          },
-          {
-            id: 4,
-            name: 'Marco de fotos grande',
-            description: 'Marco ideal para fotos 40x30',
-          }
-    ];
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
 
-    getAll(): Product[] {
-        return this.products;
+  // Obtener todos los productos
+  findAll(): Promise<Product[]> {
+    return this.productRepository.find();
+  }
+
+  // Obtener un producto por ID
+  async findOne(id: number): Promise<Product> {
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException(`Producto con ID: ${id} no encontrado`);
     }
+    return product;
+  }
 
-    //READ
-    getId(id:number) {
-        return this.products.find( (item: Product) => item.id == id);
+  // Crear un nuevo producto
+  async create(createProductDto: CreateProductsDto): Promise<Product> {
+    const product = this.productRepository.create(createProductDto);
+    return await this.productRepository.save(product);
+  }
+
+  // Actualizar un producto por ID
+  async update(id: number, updateProductDto: UpdateProductsDto): Promise<Product> {
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException(`Producto con ID: ${id} no encontrado`);
     }
 
-    //CREATE
-    insert(body: any) {
-        this.products = [
-            ...this.products,
-            {
-                id: this.lastId() + 1,
-                name: body.name,
-                description: body.descripcion,
-            }
-        ]
-    }
- 
-    //UPDATE
-    update(id: number, body: any) {
-        let product: Product = {
-          id,
-          name: body.name,
-          description: body.description,
-        }
-        this.products = this.products.map( (item: Product) => {
-          console.log(item, id, item.id == id);
-          return item.id == id ? product : item;
-        });
+    Object.assign(product, updateProductDto);
+    return await this.productRepository.save(product);
+  }
+
+  // Eliminar un producto por ID
+  async remove(id: number): Promise<void> {
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException(`Producto con ID: ${id} no encontrado`);
     }
 
-    //DELETE
-    delete(id: number) {
-        this.products = this.products.filter( (item: Product) => item.id != id );
-    }
-    
-    private lastId(): number {
-        return this.products[this.products.length -1].id;
-    }
+    await this.productRepository.remove(product);
+  }
 }
-

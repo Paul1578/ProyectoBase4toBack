@@ -10,7 +10,9 @@ import { ProductsModule } from './products/products.module';
 import { TagsModule } from './tags/tags.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { User } from './users/users.entity';
+import { User } from './users/entity/users.entity';
+import { Product } from './products/entity/products.entity';
+
 
 @Module({
   imports: [ProductsModule, TagsModule, TypeOrmModule.forRoot({
@@ -20,12 +22,12 @@ import { User } from './users/users.entity';
     username: 'admin', 
     password: 'admin123', 
     database: 'midb', 
-    entities:[User],
+    entities:[User, Product],
     synchronize: true,  
     logging: true,  
   }), UsersModule
 ],
   controllers: [AppController, ProductsController, CustomersController, UsersController],
-  providers: [AppService, ProductsService, CustomersService],
+  providers: [AppService, CustomersService],
 })
 export class AppModule {}
