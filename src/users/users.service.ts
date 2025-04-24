@@ -3,73 +3,88 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entity/users.entity';
 import { CreateUserDto } from './dto/createUser.dto';
+import { Product } from '../products/entity/products.entity';  
 import { UpdateUserDto } from './dto/updateUser.dto';
-
 
 @Injectable()
 export class UsersService {
   constructor(
-  @InjectRepository(User)
-  private readonly userRepository: Repository<User>,
-){}
- 
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,  
+  ) {}
 
-  findAll():Promise <User[]>{
-    return this.userRepository.find();
+  findAll(): Promise<User[]> {
+    return this.userRepository.find({ relations: ['products'] });  
   }
 
-  async findOne(id: number) :Promise<User>{
-    const user= await this.userRepository.findOneBy({id})
-    if (!user){
-      throw new NotFoundException(`Usuario coon ID:${id} no encontrado`)
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['products'],  
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID: ${id} no encontrado`);
     }
+
     return user;
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-  const user =this.userRepository.create(createUserDto);
-  return await this.userRepository.save(user)
     
-  }
-  
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id });
-    
-    if (!user) {
-      throw new NotFoundException(`Usuario con ID: ${id} no encontrado`);
+    const user = this.userRepository.create(createUserDto);
+
+    if (createUserDto.productIds && createUserDto.productIds.length > 0) {
+      const products = await this.productRepository.findByIds(createUserDto.productIds);  
+      if (products.length !== createUserDto.productIds.length) {
+        throw new NotFoundException('Uno o más productos no se encontraron');
+      }
+
+      user.products = products;  
     }
-  
-    // Actualiza el usuario con los datos nuevos
-    Object.assign(user, updateUserDto);
+
   
     return await this.userRepository.save(user);
   }
-  
+
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID: ${id} no encontrado`);
+    }
+
+    Object.assign(user, updateUserDto);
+
+    return await this.userRepository.save(user);
+  }
 
   async remove(id: number): Promise<void> {
     const user = await this.userRepository.findOneBy({ id });
-    
+
     if (!user) {
       throw new NotFoundException(`Usuario con ID: ${id} no encontrado`);
     }
-  
+
     await this.userRepository.remove(user);
   }
-  
+
   async updateComplete(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
-  
+
     if (!user) {
       throw new NotFoundException(`Usuario con ID: ${id} no encontrado`);
     }
-  
-    user.name = updateUserDto.name?? '';
-    user.last_name = updateUserDto.last_name?? '';
+
+    user.name = updateUserDto.name ?? '';
+    user.last_name = updateUserDto.last_name ?? '';
     user.descriptions = updateUserDto.descriptions ?? '';
     user.email = updateUserDto.email ?? '';
-    user.birthday = updateUserDto.birthday?? new Date ;
+    user.birthday = updateUserDto.birthday ?? new Date();
     user.identificacion = updateUserDto.identificacion ?? 0;
-  
+
     return await this.userRepository.save(user);
   }
 }
