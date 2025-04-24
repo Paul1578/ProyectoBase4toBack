@@ -10,6 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entity/users.entity';
 import { Product } from './products/entity/products.entity';
+import { SizeModule } from './size/size.module';
+import { SizeEntity } from './size/entities/size.entity';
 
 
 @Module({
@@ -24,10 +26,11 @@ import { Product } from './products/entity/products.entity';
       username: 'admin',
       password: 'admin123',
       database: 'midb',
-      entities: [User, Product],
+      entities: [User, Product, SizeEntity],
       synchronize: true,
       logging: true,
     }),
+    SizeModule,
   ],
   controllers: [AppController, CustomersController, UsersController],
   providers: [AppService, CustomersService],

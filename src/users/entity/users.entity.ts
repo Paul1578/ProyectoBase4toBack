@@ -12,7 +12,7 @@ export class User {
     @Column('varchar',{length:50})
     last_name:string
 
-    @Column('varchar', { length: 255, nullable: true })  // Asegúrate de que `nullable: true` sea correcto
+    @Column('varchar', { length: 255, nullable: true })  
     descriptions: string;
 
     @Column('varchar',{length:50})
@@ -24,7 +24,7 @@ export class User {
     @Column('int',{width:10})
     identificacion:number
 
-    @OneToMany(() => Product, product => product.user)  // Relación inversa en Product
+    @OneToMany(() => Product, product => product.user)  
     products: Product[];
 
 }
