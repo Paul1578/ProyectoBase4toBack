@@ -7,31 +7,23 @@ import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMa
 export class Product {
     @PrimaryGeneratedColumn()
     id: number;
-
-    @Column('varchar', { length: 100 })
+  
+    @Column({ type: 'varchar', length: 100 })
     name: string;
-
-    @Column('varchar', { length: 255 })
+  
+    @Column({ type: 'text' })
     description: string;
-
-    @Column('int')
+  
+    @Column({ type: 'int' })
     stock: number;
-
-    
-    @ManyToOne(() => User, user => user.products) 
-    @JoinColumn({ name: 'user_id' })
+  
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
+      price: number;
+  
+    @ManyToOne(() => User, (user) => user.products)
     user: User;
-    @ManyToMany(() => SizeEntity, size => size.products, { cascade: true })
-    @JoinTable({
-        name: 'product_sizes',
-        joinColumn: {
-            name: 'product_id',
-            referencedColumnName: 'id',
-        },
-        inverseJoinColumn: {
-            name: 'size_id',
-            referencedColumnName: 'id',
-        },
-    })
+  
+    @JoinTable()
+    @ManyToMany(()=> SizeEntity, (size) => size.products)
     sizes: SizeEntity[];
 }
