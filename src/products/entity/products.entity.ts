@@ -1,4 +1,4 @@
-import { SizeEntity } from 'src/size/entities/size.entity';
+import { Size } from 'src/size/entities/size.entity';
 import { User } from 'src/users/entity/users.entity';
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 
@@ -24,6 +24,6 @@ export class Product {
     user: User;
   
     @JoinTable()
-    @ManyToMany(()=> SizeEntity, (size) => size.products)
-    sizes: SizeEntity[];
+    @ManyToMany(()=> Size, (size) => size.products)
+    sizes: Size[];
 }

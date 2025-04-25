@@ -5,7 +5,7 @@ import { Product } from './entity/products.entity';
 import { CreateProductsDto } from './dto/products.dto/products.dto';
 import { UpdateProductsDto } from './dto/products.dto/updateProduct.dto';
 import { User } from 'src/users/entity/users.entity';
-import { SizeEntity } from 'src/size/entities/size.entity';
+import { Size } from 'src/size/entities/size.entity';
 
 
 
@@ -18,8 +18,8 @@ export class ProductsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    @InjectRepository(SizeEntity)
-    private readonly sizeRepository: Repository<SizeEntity>,
+    @InjectRepository(Size)
+    private readonly sizeRepository: Repository<Size>,
   ) {}
 
   private async validateUser(userId: number): Promise<User> {
@@ -35,8 +35,8 @@ export class ProductsService {
     return user;
   }
 
-  private async findOrCreateSizes(sizeNames: string[]): Promise<SizeEntity[]> {
-    const sizes: SizeEntity[] = [];
+  private async findOrCreateSizes(sizeNames: string[]): Promise<Size[]> {
+    const sizes: Size[] = [];
 
     for (const sizeName of sizeNames) {
       let size = await this.sizeRepository.findOne({ where: { size: sizeName } });

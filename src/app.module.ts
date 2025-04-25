@@ -11,7 +11,7 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entity/users.entity';
 import { Product } from './products/entity/products.entity';
 import { SizeModule } from './size/size.module';
-import { SizeEntity } from './size/entities/size.entity';
+import { Size } from './size/entities/size.entity';
 
 
 @Module({
@@ -26,7 +26,7 @@ import { SizeEntity } from './size/entities/size.entity';
       username: 'admin',
       password: 'admin123',
       database: 'midb',
-      entities: [User, Product, SizeEntity],
+      entities: [User, Product, Size],
       synchronize: true,
       logging: true,
     }),
