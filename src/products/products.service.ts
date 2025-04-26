@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Product } from './entity/products.entity';
 import { CreateProductsDto } from './dto/products.dto/products.dto';
 import { UpdateProductsDto } from './dto/products.dto/updateProduct.dto';
 import { User } from 'src/users/entity/users.entity';
 import { Size } from 'src/size/entities/size.entity';
+import { QueryProductDto } from './dto/products.dto/queryProducts.dto';
 
 
 
@@ -21,6 +22,26 @@ export class ProductsService {
     @InjectRepository(Size)
     private readonly sizeRepository: Repository<Size>,
   ) {}
+
+  getAll(query: QueryProductDto): Promise<Product[]> {
+    return this.productRepository.find({
+      take: query.limit,
+      where: {
+        name: Like(`%${query.name}%`),
+      },
+      order: {
+        [query.order]: 'ASC',
+      },
+    });
+  }
+
+  async searchProductsByName(valor){
+    this.productRepository.find({
+      where: { 
+        name: valor,
+      }
+    });
+  }
 
   private async validateUser(userId: number): Promise<User> {
     if (!userId || typeof userId !== 'number') {

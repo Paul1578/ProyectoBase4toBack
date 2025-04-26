@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Patch, Query, ValidationPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductsDto } from './dto/products.dto/products.dto';
 import { UpdateProductsDto } from './dto/products.dto/updateProduct.dto';
+import { Product } from './entity/products.entity';
+import { QueryProductDto } from './dto/products.dto/queryProducts.dto';
 
 
 @Controller('products')
@@ -13,6 +15,11 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  @Get('query')
+  async getAll(@Query(new ValidationPipe({ transform: true })) query: QueryProductDto): Promise<Product[]> {
+    return this.productsService.getAll(query);
+  }
+
   @Get()
   findAll() {
     return this.productsService.findAll();
@@ -21,6 +28,11 @@ export class ProductsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
+  }
+
+  @Get('search-by-name')
+  async searchProductsByName(@Query('name') name: string) {
+    return this.productsService.searchProductsByName(name);
   }
 
   @Patch(':id')
